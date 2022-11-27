@@ -136,6 +136,7 @@ class ExperimentBuilder(nn.Module):
         plt.ylabel("Average Gradient")
         plt.title("Gradient flow")
         plt.grid(True)
+        plt.subplots_adjust(bottom=0.15)
         plt.tight_layout()
         
         return plt
@@ -155,7 +156,16 @@ class ExperimentBuilder(nn.Module):
         """
         ########################################
         
-        
+        for name, value in named_parameters:
+            if (value.requires_grad) and ('weight' in name):
+                all_grads.append(value.grad.abs().mean())
+                name = name.replace('layer_dict.', '', 1).replace('.layer_dict.', '_', 2).replace('.weight', '')
+
+                if ('logit_linear_layer' in name):
+                    name = 'weight_' + name
+
+                layers.append(name)
+
         ########################################
             
         
